@@ -9,7 +9,16 @@ def extract_data_from_csv(file):
     data = pd.read_csv(file)
     return data
 
+def transform(daily_rates, historical_rates):
 
-#Testing
-data = extract_data_from_csv("csv_files/eurofxref.csv")
-print(data)
+    transformed_daily_rates = daily_rates[[" USD", " SEK", " GBP", " JPY"]]
+    return transformed_daily_rates
+
+
+def run_etl_pipeline():
+    data = extract_data_from_csv("csv_files/eurofxref.csv")
+    transformed_data = transform(data)
+    print(data)
+    print(transformed_data)
+
+run_etl_pipeline()
