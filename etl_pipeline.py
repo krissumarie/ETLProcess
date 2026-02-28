@@ -16,7 +16,8 @@ def transform(daily_rates, historical_rates):
     transformed_daily_rates = daily_rates[["USD", "SEK", "GBP", "JPY"]]
     transformed_historical_rates = historical_rates[["USD", "SEK", "GBP", "JPY"]]
 
-    return transformed_daily_rates
+    mean_average = transformed_historical_rates.mean()
+    return mean_average
 
 
 def run_etl_pipeline():
