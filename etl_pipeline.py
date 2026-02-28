@@ -35,9 +35,11 @@ def load_data(mean_average, transformed_daily_rates):
     :param transformed_daily_rates:
     :return: md_table
     """
-    md_table = pd.DataFrame({"Currency code": CURRENCY_CODES,
+    md_table = pd.DataFrame({"Currency code": transformed_daily_rates.index,
                              "Rate": transformed_daily_rates.values,
                              "Mean historical rate": mean_average.values})
+
+    md_table.to_markdown("exchange_rates.md", index=False)
     return md_table
 
 def run_etl_pipeline():
