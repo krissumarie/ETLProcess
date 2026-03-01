@@ -16,20 +16,6 @@ def extract_csv_from_zip(url):
     """
     return pd.read_csv(url, compression="zip", skipinitialspace=True)
 
-def extract_data_from_csv(daily_rates_file, historical_rates_file):
-    """
-    Extract and return the data in DataFrame format from the csv file, using pandas.
-    :param historical_rates_file:
-    :param daily_rates_file:
-    :return: data
-    """
-    #Read the CSV file to a DataFrame format
-
-    daily_data = pd.read_csv(daily_rates_file)
-    historical_data = pd.read_csv(historical_rates_file)
-
-    return daily_data, historical_data
-
 def transform(daily_data, historical_data):
     """
     Select only necessary currency codes, calculate mean historical rates.
@@ -63,9 +49,14 @@ def run_etl_pipeline():
     """
     daily_df = extract_csv_from_zip(DAILY_URL)
     historical_df = extract_csv_from_zip(HISTORICAL_URL)
+    if daily_df is None or historical_df is None:
+        print("ETL pipeline failed")
+        return
 
     mean_average, daily_transformed_data = transform(daily_df, historical_df)
     load_data(mean_average, daily_transformed_data)
+    print("ETL pipeline succeeded")
+
 
 if __name__ == "__main__":
     run_etl_pipeline()
