@@ -1,6 +1,20 @@
+import io
+import zipfile
+
 import pandas as pd
+import requests
 
 CURRENCY_CODES = ["USD", "SEK", "GBP", "JPY"]
+DAILY_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref.zip"
+HISTORICAL_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip"
+DATA_DIR = "ecb_data"
+
+def extract_csv_from_zip(url):
+    """
+    Try to extract csv file.
+    :return: extracted csv file
+    """
+    return pd.read_csv(url, compression="zip", skipinitialspace=True)
 
 def extract_data_from_csv(daily_rates_file, historical_rates_file):
     """
@@ -10,19 +24,20 @@ def extract_data_from_csv(daily_rates_file, historical_rates_file):
     :return: data
     """
     #Read the CSV file to a DataFrame format
-    daily_data = pd.read_csv(daily_rates_file, skipinitialspace=True)
-    historical_data = pd.read_csv(historical_rates_file, skipinitialspace=True)
+
+    daily_data = pd.read_csv(daily_rates_file)
+    historical_data = pd.read_csv(historical_rates_file)
 
     return daily_data, historical_data
 
 def transform(daily_data, historical_data):
     """
-    Select only necessary currency codes, calculate mean average.
+    Select only necessary currency codes, calculate mean historical rates.
     :param daily_data:
     :param historical_data:
     :return: mean_average, transformed_daily_rates
     """
-    transformed_daily_rates = daily_data[CURRENCY_CODES].iloc[0] # To a series (1 dimensional)
+    transformed_daily_rates = daily_data[CURRENCY_CODES].iloc[0] # To a Series (1 dimensional)
     transformed_historical_rates = historical_data[CURRENCY_CODES]
 
     mean_average = transformed_historical_rates.mean(skipna=True)
@@ -43,11 +58,14 @@ def load_data(mean_average, transformed_daily_rates):
     return md_table
 
 def run_etl_pipeline():
+    """
+    Run the ETL process
+    """
+    daily_df = extract_csv_from_zip(DAILY_URL)
+    historical_df = extract_csv_from_zip(HISTORICAL_URL)
 
-    daily, historical = extract_data_from_csv("csv_files/eurofxref.csv", "csv_files/eurofxref-hist.csv")
-    mean_average, daily_transformed_data = transform(daily, historical)
-    md_table = load_data(mean_average, daily_transformed_data)
-    print(md_table)
+    mean_average, daily_transformed_data = transform(daily_df, historical_df)
+    load_data(mean_average, daily_transformed_data)
 
 if __name__ == "__main__":
     run_etl_pipeline()
