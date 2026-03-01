@@ -1,13 +1,8 @@
-import io
-import zipfile
-
 import pandas as pd
-import requests
 
 CURRENCY_CODES = ["USD", "SEK", "GBP", "JPY"]
 DAILY_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref.zip"
 HISTORICAL_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip"
-DATA_DIR = "ecb_data"
 
 def extract_csv_from_zip(url):
     """
